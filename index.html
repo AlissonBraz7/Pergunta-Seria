@@ -12,16 +12,16 @@
     h1 { margin: 0 0 12px; color: var(--soft); font-size: clamp(1.35rem, 4vw, 1.8rem); font-weight: 400; }
     h2 { margin: 0; font-size: clamp(2.3rem, 9vw, 4rem); }
     p { color: #bda8b7; margin: 16px 0 52px; }
-    .actions { position: relative; height: 90px; }
+    .actions { position: relative; height: 90px; display: flex; justify-content: center; align-items: flex-start; gap: 12px; }
     button { border: 0; border-radius: 12px; padding: 14px 28px; font: 700 1.1rem Georgia, serif; cursor: pointer; transition: transform .2s, background .2s; }
     #yes { background: var(--pink); color: white; }
     #yes:hover { background: #ff79a5; transform: translateY(-3px); }
-    #no { position: absolute; left: 55%; top: 0; background: #35243a; color: #e8dce8; }
+    #no { background: #35243a; color: #e8dce8; }
     .heart { display: none; position: fixed; inset: 0; place-items: center; background: #050505; }
     .heart.show { display: grid; }
-    .heart-art { width: min(90vw, 640px); height: min(75vh, 560px); color: #ffb6c1; font: 700 8px Arial, sans-serif; white-space: pre; line-height: 1; text-align: center; overflow: hidden; }
-    .heart-art span { display: block; animation: reveal .45s both; }
-    @keyframes reveal { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+    .heart-art { width: min(90vw, 640px); height: min(75vh, 560px); color: #ffb6c1; font: 700 7px Arial, sans-serif; white-space: pre; line-height: 1; text-align: center; overflow: hidden; }
+    .heart-art span { display: block; animation: reveal .7s ease-out both; }
+    @keyframes reveal { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -42,6 +42,7 @@
     const actions = document.querySelector('.actions');
     function escapeNo(event) {
       event.preventDefault();
+      no.style.position = 'absolute';
       const maxX = actions.clientWidth - no.offsetWidth;
       const maxY = actions.clientHeight - no.offsetHeight;
       no.style.left = `${Math.random() * Math.max(maxX, 0)}px`;
@@ -65,7 +66,7 @@
           line.style.position = 'absolute';
           line.style.left = `calc(50% + ${x * scale}px)`;
           line.style.top = `calc(45% - ${y * scale}px)`;
-          line.style.animationDelay = `${(scale * 120 + i) * 0.002}s`;
+          line.style.animationDelay = `${(scale * 120 + i) * 0.012}s`;
           art.style.position = 'relative';
           art.appendChild(line);
         }
