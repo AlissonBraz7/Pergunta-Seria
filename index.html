@@ -81,7 +81,8 @@
           line.style.position = 'absolute';
           line.style.left = `calc(50% + ${x * scale}px)`;
           line.style.top = `calc(45% - ${y * scale}px)`;
-          line.style.animationDelay = `${(scale * 120 + i) * 0.035}s`;
+          const ordem = (scale - 11) * 121 + i;
+          line.style.animationDelay = `${ordem * 0.035}s`;
           art.style.position = 'relative';
           art.appendChild(line);
         }
