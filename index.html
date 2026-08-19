@@ -16,11 +16,11 @@
     button { border: 0; border-radius: 12px; padding: 14px 28px; font: 700 1.1rem Georgia, serif; cursor: pointer; transition: transform .2s, background .2s; }
     #yes { background: var(--pink); color: white; }
     #yes:hover { background: #ff79a5; transform: translateY(-3px); }
-    #no { background: #35243a; color: #e8dce8; }
+    #no { background: #35243a; color: #e8dce8; transition: left .55s cubic-bezier(.22, 1, .36, 1), top .55s cubic-bezier(.22, 1, .36, 1), transform .2s, background .2s; }
     .heart { display: none; position: fixed; inset: 0; place-items: center; background: #050505; }
     .heart.show { display: grid; }
     .heart-art { width: min(90vw, 640px); height: min(75vh, 560px); color: #ffb6c1; font: 700 7px Arial, sans-serif; white-space: pre; line-height: 1; text-align: center; overflow: hidden; }
-    .heart-art span { display: block; animation: reveal .7s ease-out both; }
+    .heart-art span { display: block; animation: reveal 1.1s ease-out both; }
     @keyframes reveal { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
@@ -45,8 +45,23 @@
       no.style.position = 'absolute';
       const maxX = actions.clientWidth - no.offsetWidth;
       const maxY = actions.clientHeight - no.offsetHeight;
-      no.style.left = `${Math.random() * Math.max(maxX, 0)}px`;
-      no.style.top = `${Math.random() * Math.max(maxY, 0)}px`;
+      const mouseX = event.clientX - actions.getBoundingClientRect().left;
+      const mouseY = event.clientY - actions.getBoundingClientRect().top;
+      const candidatos = [
+        [8, 4], [Math.max(maxX - 8, 0), 4],
+        [8, Math.max(maxY - 4, 0)], [Math.max(maxX - 8, 0), Math.max(maxY - 4, 0)],
+        [Math.max(maxX / 2, 0), 4], [Math.max(maxX / 2, 0), Math.max(maxY - 4, 0)]
+      ];
+      candidatos.sort((a, b) => {
+        const distanciaA = Math.hypot(a[0] - mouseX, a[1] - mouseY);
+        const distanciaB = Math.hypot(b[0] - mouseX, b[1] - mouseY);
+        return distanciaB - distanciaA;
+      });
+      const [destinoX, destinoY] = candidatos[Math.floor(Math.random() * 3)];
+      no.style.transform = 'scale(.96)';
+      no.style.left = `${destinoX}px`;
+      no.style.top = `${destinoY}px`;
+      window.setTimeout(() => { no.style.transform = 'scale(1)'; }, 220);
     }
     no.addEventListener('pointerenter', escapeNo);
     no.addEventListener('pointerdown', escapeNo);
@@ -66,7 +81,7 @@
           line.style.position = 'absolute';
           line.style.left = `calc(50% + ${x * scale}px)`;
           line.style.top = `calc(45% - ${y * scale}px)`;
-          line.style.animationDelay = `${(scale * 120 + i) * 0.012}s`;
+          line.style.animationDelay = `${(scale * 120 + i) * 0.035}s`;
           art.style.position = 'relative';
           art.appendChild(line);
         }
