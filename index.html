@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uma pergunta especial</title>
+  <style>
+    :root { --bg: #120b16; --pink: #ff4f87; --soft: #ffb6d2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 20%, #2b1427, var(--bg) 55%); color: white; font-family: Georgia, serif; }
+    main { width: min(620px, calc(100vw - 32px)); min-height: 430px; padding: 56px 24px; text-align: center; }
+    h1 { margin: 0 0 12px; color: var(--soft); font-size: clamp(1.35rem, 4vw, 1.8rem); font-weight: 400; }
+    h2 { margin: 0; font-size: clamp(2.3rem, 9vw, 4rem); }
+    p { color: #bda8b7; margin: 16px 0 52px; }
+    .actions { position: relative; height: 90px; }
+    button { border: 0; border-radius: 12px; padding: 14px 28px; font: 700 1.1rem Georgia, serif; cursor: pointer; transition: transform .2s, background .2s; }
+    #yes { background: var(--pink); color: white; }
+    #yes:hover { background: #ff79a5; transform: translateY(-3px); }
+    #no { position: absolute; left: 55%; top: 0; background: #35243a; color: #e8dce8; }
+    .heart { display: none; position: fixed; inset: 0; place-items: center; background: #050505; }
+    .heart.show { display: grid; }
+    .heart-art { width: min(90vw, 640px); height: min(75vh, 560px); color: #ffb6c1; font: 700 8px Arial, sans-serif; white-space: pre; line-height: 1; text-align: center; overflow: hidden; }
+    .heart-art span { display: block; animation: reveal .45s both; }
+    @keyframes reveal { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body>
+  <main id="question">
+    <h1>Tenho uma pergunta para você...</h1>
+    <h2>Você me ama?</h2>
+    <p>Escolha com carinho ♡</p>
+    <div class="actions">
+      <button id="yes">Sim ♥</button>
+      <button id="no">Não</button>
+    </div>
+  </main>
+  <section class="heart" id="heart" aria-label="Coração formado por palavras LOVE">
+    <div class="heart-art" id="heartArt"></div>
+  </section>
+  <script>
+    const no = document.querySelector('#no');
+    const actions = document.querySelector('.actions');
+    function escapeNo(event) {
+      event.preventDefault();
+      const maxX = actions.clientWidth - no.offsetWidth;
+      const maxY = actions.clientHeight - no.offsetHeight;
+      no.style.left = `${Math.random() * Math.max(maxX, 0)}px`;
+      no.style.top = `${Math.random() * Math.max(maxY, 0)}px`;
+    }
+    no.addEventListener('pointerenter', escapeNo);
+    no.addEventListener('pointerdown', escapeNo);
+    no.addEventListener('click', escapeNo);
+
+    document.querySelector('#yes').addEventListener('click', () => {
+      document.querySelector('#question').style.display = 'none';
+      document.querySelector('#heart').classList.add('show');
+      const art = document.querySelector('#heartArt');
+      for (let scale = 11; scale < 17; scale++) {
+        for (let i = 0; i <= 120; i++) {
+          const a = i * Math.PI * 2 / 120;
+          const x = 16 * Math.sin(a) ** 3;
+          const y = 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a);
+          const line = document.createElement('span');
+          line.textContent = 'LOVE';
+          line.style.position = 'absolute';
+          line.style.left = `calc(50% + ${x * scale}px)`;
+          line.style.top = `calc(45% - ${y * scale}px)`;
+          line.style.animationDelay = `${(scale * 120 + i) * 0.002}s`;
+          art.style.position = 'relative';
+          art.appendChild(line);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
