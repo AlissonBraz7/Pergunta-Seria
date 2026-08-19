@@ -16,7 +16,7 @@
     button { border: 0; border-radius: 12px; padding: 14px 28px; font: 700 1.1rem Georgia, serif; cursor: pointer; transition: transform .2s, background .2s; }
     #yes { background: var(--pink); color: white; }
     #yes:hover { background: #ff79a5; transform: translateY(-3px); }
-    #no { background: #35243a; color: #e8dce8; transition: left .55s cubic-bezier(.22, 1, .36, 1), top .55s cubic-bezier(.22, 1, .36, 1), transform .2s, background .2s; }
+    #no { background: #35243a; color: #e8dce8; transition: left .48s cubic-bezier(.22, 1, .36, 1), top .48s cubic-bezier(.22, 1, .36, 1), transform .22s ease, background .2s; will-change: left, top, transform; }
     .heart { display: none; position: fixed; inset: 0; place-items: center; background: #050505; }
     .heart.show { display: grid; }
     .heart-art { width: min(90vw, 640px); height: min(75vh, 560px); color: #ffb6c1; font: 700 7px Arial, sans-serif; white-space: pre; line-height: 1; text-align: center; overflow: hidden; }
@@ -39,29 +39,47 @@
   </section>
   <script>
     const no = document.querySelector('#no');
-    const actions = document.querySelector('.actions');
+    const yes = document.querySelector('#yes');
     function escapeNo(event) {
       event.preventDefault();
       no.style.position = 'absolute';
-      const maxX = actions.clientWidth - no.offsetWidth;
-      const maxY = actions.clientHeight - no.offsetHeight;
-      const mouseX = event.clientX - actions.getBoundingClientRect().left;
-      const mouseY = event.clientY - actions.getBoundingClientRect().top;
-      const candidatos = [
-        [8, 4], [Math.max(maxX - 8, 0), 4],
-        [8, Math.max(maxY - 4, 0)], [Math.max(maxX - 8, 0), Math.max(maxY - 4, 0)],
-        [Math.max(maxX / 2, 0), 4], [Math.max(maxX / 2, 0), Math.max(maxY - 4, 0)]
-      ];
+      no.style.position = 'fixed';
+
+      const margem = 18;
+      const maxX = Math.max(window.innerWidth - no.offsetWidth - margem, margem);
+      const maxY = Math.max(window.innerHeight - no.offsetHeight - margem, margem);
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      const sim = yes.getBoundingClientRect();
+      const candidatos = [];
+
+      for (let linha = 0; linha < 4; linha++) {
+        for (let coluna = 0; coluna < 5; coluna++) {
+          candidatos.push([
+            margem + (maxX - margem) * coluna / 4,
+            margem + (maxY - margem) * linha / 3,
+          ]);
+        }
+      }
+
       candidatos.sort((a, b) => {
         const distanciaA = Math.hypot(a[0] - mouseX, a[1] - mouseY);
         const distanciaB = Math.hypot(b[0] - mouseX, b[1] - mouseY);
         return distanciaB - distanciaA;
       });
-      const [destinoX, destinoY] = candidatos[Math.floor(Math.random() * 3)];
-      no.style.transform = 'scale(.96)';
+
+      const seguros = candidatos.filter(([x, y]) => {
+        const naoSobrepoeSim = x + no.offsetWidth < sim.left - 24 || x > sim.right + 24 || y + no.offsetHeight < sim.top - 24 || y > sim.bottom + 24;
+        const longeDoMouse = Math.hypot(x - mouseX, y - mouseY) > 140;
+        return naoSobrepoeSim && longeDoMouse;
+      });
+      const opcoes = seguros.length ? seguros : candidatos;
+      const [destinoX, destinoY] = opcoes[Math.floor(Math.random() * Math.min(5, opcoes.length))];
+
+      no.style.transform = `rotate(${Math.random() * 8 - 4}deg) scale(.96)`;
       no.style.left = `${destinoX}px`;
       no.style.top = `${destinoY}px`;
-      window.setTimeout(() => { no.style.transform = 'scale(1)'; }, 220);
+      requestAnimationFrame(() => { no.style.transform = 'rotate(0deg) scale(1)'; });
     }
     no.addEventListener('pointerenter', escapeNo);
     no.addEventListener('pointerdown', escapeNo);
